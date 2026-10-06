@@ -1,0 +1,124 @@
+services:
+  postiz:
+    image: ghcr.io/gitroomhq/postiz-app:v2.25.0@sha256:7eb4a553507ce3f200deff2ec0211ab3cf834ba19eb44dd68e83ccc236509feb
+    restart: unless-stopped
+    environment:
+      MAIN_URL: ${POSTIZ_URL:?Set POSTIZ_URL}
+      FRONTEND_URL: ${POSTIZ_URL}
+      NEXT_PUBLIC_BACKEND_URL: ${POSTIZ_URL}/api
+      BACKEND_INTERNAL_URL: http://localhost:3000
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET}
+      DATABASE_URL: postgresql://postiz:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@postgres:5432/postiz
+      REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD}@redis:6379
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_NAMESPACE: default
+      IS_GENERAL: 'true'
+      RUN_CRON: 'true'
+      # Upstream allows the first account, then closes public registration.
+      DISABLE_REGISTRATION: 'true'
+      STORAGE_PROVIDER: local
+      UPLOAD_DIRECTORY: /uploads
+      NEXT_PUBLIC_UPLOAD_DIRECTORY: /uploads
+      FACEBOOK_APP_ID: ${FACEBOOK_APP_ID:-}
+      FACEBOOK_APP_SECRET: ${FACEBOOK_APP_SECRET:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+    volumes:
+      - postiz-config:/config
+      - postiz-uploads:/uploads
+    expose:
+      - '5000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "Promise.all(['http://127.0.0.1:5000/auth','http://127.0.0.1:3000/auth/can-register','http://127.0.0.1:3002/health/status'].map(async u => { const r = await fetch(u, {signal: AbortSignal.timeout(8000)}); if (!r.ok) throw new Error(String(r.status)); })).then(() => process.exit(0), () => process.exit(1))"
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postiz
+      POSTGRES_DB: postiz
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postiz-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U postiz -d postiz']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDISCLI_AUTH: ${REDIS_PASSWORD}
+    command: [sh, -c, 'exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"']
+    volumes:
+      - postiz-redis:/data
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  temporal-postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_DB: temporal
+      POSTGRES_PASSWORD: ${TEMPORAL_POSTGRES_PASSWORD:?Set TEMPORAL_POSTGRES_PASSWORD}
+    volumes:
+      - temporal-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U temporal -d temporal']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  temporal:
+    image: temporalio/auto-setup:1.28.1
+    restart: unless-stopped
+    environment:
+      DB: postgres12
+      DB_PORT: '5432'
+      POSTGRES_USER: temporal
+      POSTGRES_PWD: ${TEMPORAL_POSTGRES_PASSWORD}
+      POSTGRES_SEEDS: temporal-postgres
+      DBNAME: temporal
+      VISIBILITY_DBNAME: temporal_visibility
+      ENABLE_ES: 'false'
+      DEFAULT_NAMESPACE: default
+      SKIP_ADD_CUSTOM_SEARCH_ATTRIBUTES: 'true'
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CLI_ADDRESS: temporal:7233
+    depends_on:
+      temporal-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, temporal, operator, namespace, describe, --namespace, default]
+      interval: 15s
+      timeout: 10s
+      retries: 15
+      start_period: 60s
+
+volumes:
+  postiz-config:
+  postiz-uploads:
+  postiz-postgres:
+  postiz-redis:
+  temporal-postgres:
