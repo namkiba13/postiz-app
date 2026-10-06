@@ -68,9 +68,11 @@ variables in Coolify and redeploy before connecting your Page in Postiz.
 The callback is `${POSTIZ_URL}/integrations/social/facebook`.
 AI generation requires `OPENAI_API_KEY` and a redeploy. For 94API, set
 `OPENAI_BASE_URL=https://94api.dev/v1`, `OPENAI_MODEL=gpt-5.6-luna` and
-`OPENAI_IMAGE_MODEL=gpt-image-2.5-sunburst`. The Agent uses Responses API with
-streaming and function calling; verify all three when changing providers.
-Other text tools use Chat Completions and image generation uses Images API.
+`OPENAI_IMAGE_MODEL=gpt-image-2.5-sunburst`. The Agent uses Chat Completions with
+streaming and function calling, carrying the conversation between requests
+instead of depending on resource-bound Responses item IDs. Verify streaming
+and a complete tool-call round trip when changing providers.
+Other text tools also use Chat Completions; image generation uses Images API.
 The image setting alone does not establish image-generation compatibility.
 Leaving either model variable empty retains its upstream model defaults.
 

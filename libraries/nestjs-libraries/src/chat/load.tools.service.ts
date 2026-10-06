@@ -100,7 +100,7 @@ export class LoadToolsService {
       )}
 `;
       },
-      model: openai(process.env.OPENAI_MODEL || 'gpt-5.2'),
+      model: openai.chat(process.env.OPENAI_MODEL || 'gpt-5.2'),
       tools,
       memory: new Memory({
         storage: pStore,
