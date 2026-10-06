@@ -1,6 +1,10 @@
 services:
   postiz:
-    image: ghcr.io/gitroomhq/postiz-app:v2.25.0@sha256:7eb4a553507ce3f200deff2ec0211ab3cf834ba19eb44dd68e83ccc236509feb
+    image: postiz-94api:v2.25.0
+    pull_policy: build
+    build:
+      context: .
+      dockerfile: Dockerfile.coolify
     restart: unless-stopped
     environment:
       MAIN_URL: ${POSTIZ_URL:?Set POSTIZ_URL}
@@ -22,6 +26,9 @@ services:
       FACEBOOK_APP_ID: ${FACEBOOK_APP_ID:-}
       FACEBOOK_APP_SECRET: ${FACEBOOK_APP_SECRET:-}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
+      OPENAI_IMAGE_MODEL: ${OPENAI_IMAGE_MODEL:-}
     volumes:
       - postiz-config:/config
       - postiz-uploads:/uploads

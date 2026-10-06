@@ -37,13 +37,13 @@ interface WorkflowChannelsState {
 
 const model = new ChatOpenAI({
   apiKey: process.env.OPENAI_API_KEY || 'sk-proj-',
-  model: 'gpt-4.1',
+  model: process.env.OPENAI_MODEL || 'gpt-4.1',
   temperature: 0.7,
 });
 
 const dalle = new DallEAPIWrapper({
   apiKey: process.env.OPENAI_API_KEY || 'sk-proj-',
-  model: 'chatgpt-image-latest',
+  model: process.env.OPENAI_IMAGE_MODEL || 'chatgpt-image-latest',
 });
 
 const generateContent = z.object({

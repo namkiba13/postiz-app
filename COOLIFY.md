@@ -4,8 +4,9 @@ Fork: https://github.com/namkiba13/postiz-app
 
 Deployment branch: `deploy/coolify`, based on upstream `v2.25.0`.
 Compose file: `/docker-compose.coolify.yml`.
-The official Postiz image is pinned by version and digest; deploying this
-Compose file does not build application source changes.
+`Dockerfile.coolify` extends the official Postiz image pinned by version and
+digest, rebuilding the backend and orchestrator with configurable AI models.
+The frontend and installed dependencies come from that pinned image.
 
 ## Configuration
 
@@ -26,6 +27,9 @@ Set these runtime variables in Coolify (never commit their values):
 | `FACEBOOK_APP_ID` | Your Meta application ID, when ready |
 | `FACEBOOK_APP_SECRET` | Your Meta application secret, when ready |
 | `OPENAI_API_KEY` | Your AI provider key, when ready |
+| `OPENAI_BASE_URL` | `https://94api.dev/v1` for 94API; defaults to OpenAI |
+| `OPENAI_MODEL` | Text/Agent model ID available to your key |
+| `OPENAI_IMAGE_MODEL` | Image model ID available to your key |
 
 Hexadecimal database/Redis passwords are safe inside connection URLs without
 additional URL encoding. `DISABLE_REGISTRATION=true` permits the first local
@@ -62,7 +66,13 @@ Follow https://docs.postiz.com/providers/facebook to create your own Meta app
 and configure its OAuth callback for this hostname. Save the two Facebook
 variables in Coolify and redeploy before connecting your Page in Postiz.
 The callback is `${POSTIZ_URL}/integrations/social/facebook`.
-AI generation similarly requires `OPENAI_API_KEY` and a redeploy.
+AI generation requires `OPENAI_API_KEY` and a redeploy. For 94API, set
+`OPENAI_BASE_URL=https://94api.dev/v1`, `OPENAI_MODEL=gpt-5.6-luna` and
+`OPENAI_IMAGE_MODEL=gpt-image-2.5-sunburst`. The Agent uses Responses API with
+streaming and function calling; verify all three when changing providers.
+Other text tools use Chat Completions and image generation uses Images API.
+The image setting alone does not establish image-generation compatibility.
+Leaving either model variable empty retains its upstream model defaults.
 
 Self-hosted Postiz has no software subscription. External AI usage is billed
 by its provider. The optional Polotno design editor requires a separate
