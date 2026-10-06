@@ -100,7 +100,11 @@ export class LoadToolsService {
       )}
 `;
       },
-      model: openai.chat(process.env.OPENAI_MODEL || 'gpt-5.2'),
+      model: openai.responses(process.env.OPENAI_MODEL || 'gpt-5.2'),
+      defaultOptions: {
+        // Gateways must receive full tool history, not server-bound item IDs.
+        providerOptions: { openai: { store: false } },
+      },
       tools,
       memory: new Memory({
         storage: pStore,
