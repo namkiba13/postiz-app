@@ -78,6 +78,32 @@ Other text tools use Chat Completions; image generation uses Images API.
 The image setting alone does not establish image-generation compatibility.
 Leaving either model variable empty retains its upstream model defaults.
 
+### Agent writing workflow
+
+The Agent chat uses selected `marketingskills/social` guidance to draft and
+`blader/humanizer` guidance to edit before returning the final text in the same
+model response. It follows the user's language, includes Vietnamese style
+guidance, and uses facts and voice samples from the current conversation.
+Sources, pinned revisions and MIT notices are in
+[`WRITING-SOURCES.md`](libraries/nestjs-libraries/src/chat/WRITING-SOURCES.md).
+
+This is configured in `LoadToolsService.agent().instructions` and takes effect
+after a backend rebuild/redeploy. Writing a draft returns text in chat;
+creating a calendar draft or scheduling still uses the existing Postiz tools.
+The separate Generate Posts feature has its own instructions.
+
+After deploying, open `/agents/new` and verify:
+
+1. Ask in Vietnamese for a short Facebook introduction to 94API, supplying
+   `https://94api.dev`, text model `gpt-6.1-sol` and image model
+   `gpt-image-2.5-sunburst`. Request chat text only. Expect a complete Vietnamese
+   post preserving those facts, without invented prices, speed or customer
+   claims, raw HTML, or a scheduling/composer tool call.
+2. Ask to shorten the same post while preserving the URL and both model IDs.
+   Expect an edited post that follows the same voice and preserves those facts.
+3. Ask the Agent to list connected channels. Expect the existing channel-list
+   tool to run and its real result to be reported normally.
+
 Self-hosted Postiz has no software subscription. External AI usage is billed
 by its provider. The optional Polotno design editor requires a separate
 commercial SDK license for production; no Polotno license is configured here.
