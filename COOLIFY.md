@@ -11,7 +11,7 @@ The frontend and installed dependencies come from that pinned image.
 ## Configuration
 
 Create a public Git application with Docker Compose as its build pack. Assign
-`https://postiz.66.163.122.150.sslip.io:5000` to the `postiz` service in Coolify.
+`https://fb.94api.dev:5000` to the `postiz` service in Coolify.
 The `:5000` selects the internal proxy target; visitors use HTTPS on port 443.
 Keep auto-deploy disabled and let Coolify manage HTTPS.
 
@@ -19,7 +19,7 @@ Set these runtime variables in Coolify (never commit their values):
 
 | Variable | Value |
 | --- | --- |
-| `POSTIZ_URL` | `https://postiz.66.163.122.150.sslip.io` |
+| `POSTIZ_URL` | `https://fb.94api.dev` |
 | `JWT_SECRET` | Random secret, at least 32 bytes |
 | `POSTGRES_PASSWORD` | Random hexadecimal password |
 | `REDIS_PASSWORD` | Random hexadecimal password |
@@ -55,8 +55,8 @@ namespace connectivity. Only Postiz's web service is routed publicly.
 After deploying, verify:
 
 ```bash
-curl --fail https://postiz.66.163.122.150.sslip.io/auth
-curl --fail https://postiz.66.163.122.150.sslip.io/api/auth/can-register
+curl --fail https://fb.94api.dev/auth
+curl --fail https://fb.94api.dev/api/auth/can-register
 ```
 
 Coolify should report healthy containers. Check Postiz logs for successful
