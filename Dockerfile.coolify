@@ -4,3 +4,6 @@ WORKDIR /app
 COPY libraries ./libraries
 COPY apps/backend ./apps/backend
 RUN node libraries/nestjs-libraries/src/chat/tools/openviking.memory.check.cjs && node libraries/nestjs-libraries/src/chat/mastra.history.check.cjs && pnpm run build:backend && pnpm run build:orchestrator
+COPY var/docker/public /app/public
+COPY var/docker/nginx.conf /etc/nginx/nginx.conf
+RUN nginx -t

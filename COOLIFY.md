@@ -69,6 +69,9 @@ Follow https://docs.postiz.com/providers/facebook to create your own Meta app
 and configure its OAuth callback for this hostname. Save the two Facebook
 variables in Coolify and redeploy before connecting your Page in Postiz.
 The callback is `${POSTIZ_URL}/integrations/social/facebook`.
+The image serves `/privacy` and `/data-deletion` publicly through Nginx for
+the URLs configured in the Meta app. Their text is in
+`var/docker/public/privacy.html`; update it when deployment data handling changes.
 AI generation requires `OPENAI_API_KEY` and a redeploy. For 94API, set
 `OPENAI_BASE_URL=https://94api.dev/v1`, `OPENAI_MODEL=gpt-6.1-sol` and
 `OPENAI_IMAGE_MODEL=gpt-image-2.5-sunburst`. The Agent uses Responses API with
