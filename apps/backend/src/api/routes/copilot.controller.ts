@@ -82,6 +82,16 @@ export class CopilotController {
       return;
     }
     const mastra = await this._mastraService.mastra();
+    if (
+      req.body?.method === 'agent/run' &&
+      Array.isArray(req.body?.body?.messages)
+    ) {
+      req.body.body.messages = await this._mastraService.removeStoredToolResults(
+        req.body.body.threadId,
+        organization.id,
+        req.body.body.messages
+      );
+    }
     const requestContext = new RequestContext<ChannelsContext>();
     requestContext.set(
       'integrations',

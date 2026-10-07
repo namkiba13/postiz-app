@@ -3,4 +3,4 @@ FROM ghcr.io/gitroomhq/postiz-app:v2.25.0@sha256:7eb4a553507ce3f200deff2ec0211ab
 WORKDIR /app
 COPY libraries ./libraries
 COPY apps/backend ./apps/backend
-RUN node libraries/nestjs-libraries/src/chat/tools/openviking.memory.check.cjs && pnpm run build:backend && pnpm run build:orchestrator
+RUN node libraries/nestjs-libraries/src/chat/tools/openviking.memory.check.cjs && node libraries/nestjs-libraries/src/chat/mastra.history.check.cjs && pnpm run build:backend && pnpm run build:orchestrator

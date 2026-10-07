@@ -125,6 +125,7 @@ Run the isolated tool check with:
 
 ```sh
 node libraries/nestjs-libraries/src/chat/tools/openviking.memory.check.cjs
+node libraries/nestjs-libraries/src/chat/mastra.history.check.cjs
 ```
 
 The Coolify image build runs this check before compiling. For a live check:
@@ -135,6 +136,10 @@ The Coolify image build runs this check before compiling. For a live check:
    `openvikingMemory` searches and returns the saved fact from the remote server.
 3. Ask for a post using that context and verify the facts and voice are applied.
    Inspect the returned source with the tool's `read` action if needed.
+4. Send a follow-up, then reload the chat. The earlier post and subsequent
+   response should both remain visible. Completed tool results replayed by
+   CopilotKit are filtered before the Mastra bridge so it cannot overwrite a
+   stored assistant turn with a tool-call-only fragment.
 
 Self-hosted Postiz has no software subscription. External AI usage is billed
 by its provider. The optional Polotno design editor requires a separate
