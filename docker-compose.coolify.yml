@@ -29,6 +29,9 @@ services:
       OPENAI_BASE_URL: ${OPENAI_BASE_URL:-https://api.openai.com/v1}
       OPENAI_MODEL: ${OPENAI_MODEL:-}
       OPENAI_IMAGE_MODEL: ${OPENAI_IMAGE_MODEL:-}
+      OPENVIKING_URL: ${OPENVIKING_URL:-}
+      OPENVIKING_API_KEY: ${OPENVIKING_API_KEY:-}
+      OPENVIKING_ORGANIZATION_ID: ${OPENVIKING_ORGANIZATION_ID:-}
     volumes:
       - postiz-config:/config
       - postiz-uploads:/uploads

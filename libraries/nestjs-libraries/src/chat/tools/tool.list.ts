@@ -17,8 +17,10 @@ import { PostSettingsTool } from '@gitroom/nestjs-libraries/chat/tools/post.sett
 import { UploadWidgetTool } from '@gitroom/nestjs-libraries/chat/tools/upload.widget.tool';
 import { UploadWidgetTicketTool } from '@gitroom/nestjs-libraries/chat/tools/upload.widget.ticket.tool';
 import { UploadWidgetStatusTool } from '@gitroom/nestjs-libraries/chat/tools/upload.widget.status.tool';
+import { OpenVikingMemoryTool } from '@gitroom/nestjs-libraries/chat/tools/openviking.memory.tool';
 
 export const toolList = [
+  OpenVikingMemoryTool,
   IntegrationListTool,
   GroupListTool,
   IntegrationValidationTool,

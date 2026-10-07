@@ -30,6 +30,9 @@ Set these runtime variables in Coolify (never commit their values):
 | `OPENAI_BASE_URL` | `https://94api.dev/v1` for 94API; defaults to OpenAI |
 | `OPENAI_MODEL` | Text/Agent model ID available to your key |
 | `OPENAI_IMAGE_MODEL` | Image model ID available to your key |
+| `OPENVIKING_URL` | Optional HTTPS server origin, e.g. `https://memory.94api.dev` |
+| `OPENVIKING_API_KEY` | OpenViking user key for the dedicated Postiz account |
+| `OPENVIKING_ORGANIZATION_ID` | Postiz organization ID allowed to use this key |
 
 Hexadecimal database/Redis passwords are safe inside connection URLs without
 additional URL encoding. `DISABLE_REGISTRATION=true` permits the first local
@@ -103,6 +106,35 @@ After deploying, open `/agents/new` and verify:
    Expect an edited post that follows the same voice and preserves those facts.
 3. Ask the Agent to list connected channels. Expect the existing channel-list
    tool to run and its real result to be reported normally.
+
+### OpenViking long-term memory
+
+The optional `openvikingMemory` Agent tool calls the remote server configured
+above. All three variables are required. The key stays on the backend and is
+bound to one authenticated Postiz organization; use a tenant user key rather
+than a root key. Other organizations cannot use that memory connection.
+
+The Agent searches relevant brand context before drafting, and uses `remember`
+when the user asks to save facts, preferences or samples across chats. The note
+is preserved in an OpenViking session; session commit queues native memory
+extraction. An `accepted` result is pending, and `status` reports completion or
+failure. `read` retrieves source text from a search result. Search context is
+limited to 1,600 tokens and each HTTP request times out after 30 seconds.
+
+Run the isolated tool check with:
+
+```sh
+node libraries/nestjs-libraries/src/chat/tools/openviking.memory.check.cjs
+```
+
+The Coolify image build runs this check before compiling. For a live check:
+
+1. Ask the Agent to remember a supplied brand fact. Confirm the tool returns a
+   session and task ID; check the task reaches `completed`.
+2. Open a new Agent chat and ask about that fact without repeating it. Confirm
+   `openvikingMemory` searches and returns the saved fact from the remote server.
+3. Ask for a post using that context and verify the facts and voice are applied.
+   Inspect the returned source with the tool's `read` action if needed.
 
 Self-hosted Postiz has no software subscription. External AI usage is billed
 by its provider. The optional Polotno design editor requires a separate
